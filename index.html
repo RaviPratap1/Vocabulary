@@ -420,6 +420,19 @@ function goTab(id,btn){
   updateNav();
   if(id==='dashboard')updateDashboard();
   else if(id==='plan')renderPlan();
+  else if(id==='practice'){
+    // If no words loaded yet, show start button
+    const el=document.getElementById('prac-content');
+    if(!pWords.length&&el&&!el.innerHTML.trim()){
+      el.innerHTML='<div class="result-box"><div class="result-emoji">✏️</div><div class="result-title">Vocabulary Practice</div><div class="result-sub">Hindi word dikhega → English type karo<br>3 baar sahi = ⭐ Remembered!</div><button class="big-btn" style="margin-top:8px" onclick="startPractice()">▶ Shuru Karo</button></div>';
+    }
+  }
+  else if(id==='test'){
+    const el=document.getElementById('test-content');
+    if(!tWords.length&&el&&!el.innerHTML.trim()){
+      el.innerHTML='<div class="result-box"><div class="result-emoji">📝</div><div class="result-title">Daily Test</div><div class="result-sub">Remaining words ka test<br>Galat words pehle aayenge</div><button class="big-btn" style="margin-top:8px" onclick="startTest()">▶ Test Shuru Karo</button></div>';
+    }
+  }
   else if(id==='paragraph')renderParaSection();
   else if(id==='translator')renderTranslator();
   else if(id==='h2e')renderH2E();
@@ -483,7 +496,12 @@ function startPractice(){
   rem.sort((a,b)=>((p[b.id]&&p[b.id].wrongCount)||0)-((p[a.id]&&p[a.id].wrongCount)||0));
   for(let i=rem.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[rem[i],rem[j]]=[rem[j],rem[i]];}
   pWords=rem;pIdx=0;
-  goTab('practice',document.querySelectorAll('.nav-tab')[2]);
+  // Switch to practice section without triggering goTab recursion
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('sec-practice').classList.add('active');
+  document.querySelectorAll('.nav-tab')[2].classList.add('active');
+  updateNav();
   renderPracCard();
 }
 function renderPracCard(){
@@ -625,7 +643,13 @@ function startTest(){
   const p=getProg();
   rem.sort((a,b)=>((p[b.id]&&p[b.id].wrongCount)||0)-((p[a.id]&&p[a.id].wrongCount)||0));
   tWords=rem;tIdx=0;tCorrect=0;tWrong=[];tAnswered=false;
-  goTab('test',document.querySelectorAll('.nav-tab')[4]);renderTestCard();
+  // Switch to test section without triggering goTab recursion
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('sec-test').classList.add('active');
+  document.querySelectorAll('.nav-tab')[4].classList.add('active');
+  updateNav();
+  renderTestCard();
 }
 function renderTestCard(){
   const el=document.getElementById('test-content');
